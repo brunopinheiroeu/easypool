@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const OPTION_COLORS = ["#f4a7b9", "#a8d8c8", "#c5b8e8", "#f9c89b", "#a8cce8", "#f7e0a0", "#e8c8a8", "#b8d8a8"];
+const MAX_OPTIONS = 20;
 
 export default function CreatePage() {
   const { data: session, status } = useSession();
@@ -26,15 +27,30 @@ export default function CreatePage() {
     );
   }
 
+  const filledCount = options.filter(o => o.trim()).length;
+  const atLimit = filledCount >= MAX_OPTIONS;
+
   const removeOption = (i: number) => setOptions(options.filter((_, idx) => idx !== i));
+
   const updateOption = (i: number, val: string) => {
     const next = [...options];
     next[i] = val;
-    // Auto-add new field when typing in the last option
-    if (i === next.length - 1 && val.trim() && next.length < 12) {
+    if (i === next.length - 1 && val.trim() && next.filter(o => o.trim()).length < MAX_OPTIONS) {
       next.push("");
     }
     setOptions(next);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, i: number) => {
+    const text = e.clipboardData.getData("text");
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return; // single line — paste normally
+    e.preventDefault();
+    const before = options.slice(0, i).filter(o => o.trim());
+    const after = options.slice(i + 1).filter(o => o.trim());
+    const merged = [...before, ...lines, ...after].slice(0, MAX_OPTIONS);
+    merged.push(""); // trailing empty field
+    setOptions(merged);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,16 +97,23 @@ export default function CreatePage() {
             </div>
 
             <div>
-              <label style={{ display: "block", fontWeight: 600, marginBottom: "0.75rem", fontSize: "0.9rem" }}>Opções *</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.75rem" }}>
+                <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Opções *</label>
+                <span style={{ fontSize: "0.78rem", color: atLimit ? "#c0785a" : "var(--text-muted)" }}>
+                  {filledCount}/{MAX_OPTIONS}
+                  {atLimit && " — limite atingido"}
+                </span>
+              </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                 {options.map((opt, i) => (
                   <div key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                     <div style={{ width: 12, height: 12, borderRadius: "50%", flexShrink: 0, background: OPTION_COLORS[i % OPTION_COLORS.length] }} />
                     <input
                       className="input"
-                      placeholder={`Opção ${i + 1}`}
+                      placeholder={i === 0 ? "Cole uma lista aqui ou digite opção por opção" : `Opção ${i + 1}`}
                       value={opt}
                       onChange={e => updateOption(i, e.target.value)}
+                      onPaste={e => handlePaste(e, i)}
                       maxLength={120}
                       style={{ flex: 1 }}
                     />
@@ -100,6 +123,11 @@ export default function CreatePage() {
                   </div>
                 ))}
               </div>
+              {atLimit && (
+                <p style={{ fontSize: "0.78rem", color: "#c0785a", marginTop: "0.5rem" }}>
+                  Máximo de {MAX_OPTIONS} opções atingido.
+                </p>
+              )}
             </div>
 
             <div>

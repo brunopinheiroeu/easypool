@@ -4,6 +4,8 @@ import { useState } from "react";
 interface Option { id: string; text: string; display_order: number; vote_count: number }
 interface Poll { slug: string; title: string; description: string | null; expires_at: string | null; options: Option[] }
 
+const MAX_OPTIONS = 20;
+
 export default function EditPollModal({ poll, onClose, onSaved }: {
   poll: Poll;
   onClose: () => void;
@@ -17,6 +19,28 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const filledCount = options.filter(o => o.trim()).length;
+  const atLimit = filledCount >= MAX_OPTIONS;
+
+  const updateOption = (i: number, val: string) => {
+    const n = [...options];
+    n[i] = val;
+    if (i === n.length - 1 && val.trim() && n.filter(o => o.trim()).length < MAX_OPTIONS) n.push("");
+    setOptions(n);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, i: number) => {
+    const text = e.clipboardData.getData("text");
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return;
+    e.preventDefault();
+    const before = options.slice(0, i).filter(o => o.trim());
+    const after = options.slice(i + 1).filter(o => o.trim());
+    const merged = [...before, ...lines, ...after].slice(0, MAX_OPTIONS);
+    merged.push("");
+    setOptions(merged);
+  };
 
   const handleSave = async () => {
     setError("");
@@ -57,19 +81,20 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
             <textarea className="input" value={description} onChange={e => setDescription(e.target.value)} maxLength={400} />
           </div>
           <div>
-            <label style={{ display: "block", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.6rem" }}>Opções</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.6rem" }}>
+              <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Opções</label>
+              <span style={{ fontSize: "0.78rem", color: atLimit ? "#c0785a" : "var(--text-muted)" }}>
+                {filledCount}/{MAX_OPTIONS}{atLimit && " — limite atingido"}
+              </span>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {options.map((opt, i) => (
                 <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
                   <input
                     className="input"
                     value={opt}
-                    onChange={e => {
-                      const n = [...options];
-                      n[i] = e.target.value;
-                      if (i === n.length - 1 && e.target.value.trim() && n.length < 12) n.push("");
-                      setOptions(n);
-                    }}
+                    onChange={e => updateOption(i, e.target.value)}
+                    onPaste={e => handlePaste(e, i)}
                     maxLength={120}
                     style={{ flex: 1 }}
                   />
@@ -79,6 +104,11 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
                 </div>
               ))}
             </div>
+            {atLimit && (
+              <p style={{ fontSize: "0.78rem", color: "#c0785a", marginTop: "0.5rem" }}>
+                Máximo de {MAX_OPTIONS} opções atingido.
+              </p>
+            )}
           </div>
           <div>
             <label style={{ display: "block", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.4rem" }}>Data limite</label>
