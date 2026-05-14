@@ -182,12 +182,13 @@ export default function PollClient({ slug }: { slug: string }) {
                     <span style={{ fontWeight: isMyVote ? 600 : 400 }}>{opt.text}</span>
                     {isMyVote && (
                       <div style={{
-                        position: "absolute", top: 10, right: 10,
-                        width: 22, height: 22, borderRadius: "50%",
-                        background: color, display: "flex", alignItems: "center", justifyContent: "center",
+                        position: "absolute", top: -12, right: -12,
+                        width: 30, height: 30, borderRadius: "50%",
+                        background: "#a8d8c8", display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
                       }}>
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path d="M2.5 7l3.5 3.5 5.5-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </div>
                     )}
