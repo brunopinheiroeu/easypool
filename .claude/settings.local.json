@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "mcp__Neon__create_project",
+      "mcp__Neon__run_sql",
+      "mcp__Neon__run_sql_transaction",
+      "Bash(git add *)",
+      "Bash(git commit -m 'fix: remove default Next.js page blocking the app route *)",
+      "Bash(git push *)"
     ]
   }
 }
