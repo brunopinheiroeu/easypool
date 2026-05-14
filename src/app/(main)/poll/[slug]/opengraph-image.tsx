@@ -1,11 +1,13 @@
 import { ImageResponse } from "next/og";
 import sql from "@/lib/db";
 
+export const alt = "EasyPool — votação";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  const rows = await sql`SELECT title, description FROM polls WHERE slug = ${params.slug}`;
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const rows = await sql`SELECT title, description FROM polls WHERE slug = ${slug}`;
   const poll = rows[0];
   const title = poll?.title || "Votação";
   const description = poll?.description || "Vote agora e veja os resultados em tempo real.";
@@ -22,11 +24,9 @@ export default async function Image({ params }: { params: { slug: string } }) {
           justifyContent: "center",
           background: "#fdf8f4",
           padding: "80px",
-          fontFamily: "serif",
           position: "relative",
         }}
       >
-        {/* blob decorations */}
         <div style={{ position: "absolute", top: -60, right: -60, width: 400, height: 400, borderRadius: "50%", background: "rgba(244,167,185,0.25)", display: "flex" }} />
         <div style={{ position: "absolute", bottom: -60, left: -60, width: 320, height: 320, borderRadius: "50%", background: "rgba(168,216,200,0.25)", display: "flex" }} />
 
