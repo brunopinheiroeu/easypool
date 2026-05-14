@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Twitterbot", allow: "/" },
       { userAgent: "WhatsApp", allow: "/" },
     ],
-    sitemap: "https://easypool.brunix.studio/sitemap.xml",
+    sitemap: "https://easypoll.brunix.studio/sitemap.xml",
   };
 }

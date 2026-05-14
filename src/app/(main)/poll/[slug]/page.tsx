@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: poll.title,
       description,
-      url: `https://easypool.brunix.studio/poll/${slug}`,
+      url: `https://easypoll.brunix.studio/poll/${slug}`,
       siteName: "EasyPoll",
       type: "website",
       // imagem gerada automaticamente pelo opengraph-image.tsx
