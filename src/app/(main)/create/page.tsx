@@ -11,7 +11,7 @@ export default function CreatePage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [options, setOptions] = useState(["", ""]);
+  const [options, setOptions] = useState([""]);
   const [expiresAt, setExpiresAt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,7 +35,8 @@ export default function CreatePage() {
   const updateOption = (i: number, val: string) => {
     const next = [...options];
     next[i] = val;
-    if (i === next.length - 1 && val.trim() && next.filter(o => o.trim()).length < MAX_OPTIONS) {
+    const filled = next.filter(o => o.trim()).length;
+    if (i === next.length - 1 && val.trim() && filled < MAX_OPTIONS) {
       next.push("");
     }
     setOptions(next);
@@ -49,7 +50,7 @@ export default function CreatePage() {
     const before = options.slice(0, i).filter(o => o.trim());
     const after = options.slice(i + 1).filter(o => o.trim());
     const merged = [...before, ...lines, ...after].slice(0, MAX_OPTIONS);
-    merged.push(""); // trailing empty field
+    if (merged.length < MAX_OPTIONS) merged.push("");
     setOptions(merged);
   };
 

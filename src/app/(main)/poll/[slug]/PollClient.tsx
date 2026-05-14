@@ -173,15 +173,49 @@ export default function PollClient({ slug }: { slug: string }) {
                   background: isMyVote ? `${color}25` : isSelected ? `${color}15` : "rgba(255,255,255,0.5)",
                   cursor: canVote ? "pointer" : "default",
                   transition: "all 0.15s",
+                  position: "relative",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: hasVoted ? "0.5rem" : 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                     <div style={{ width: 12, height: 12, borderRadius: "50%", background: color, flexShrink: 0 }} />
                     <span style={{ fontWeight: isMyVote ? 600 : 400 }}>{opt.text}</span>
-                    {isMyVote && <span style={{ fontSize: "0.75rem", color: "#3a7a64", background: "#a8d8c840", padding: "0.1rem 0.5rem", borderRadius: 999 }}>✓ meu voto</span>}
+                    {isMyVote && (
+                      <div style={{
+                        position: "absolute", top: 10, right: 10,
+                        width: 22, height: 22, borderRadius: "50%",
+                        background: color, display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                  {hasVoted && <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-muted)" }}>{pct}%</span>}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                    {hasVoted && <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-muted)" }}>{pct}%</span>}
+                    {isSelected && canVote && (
+                      <button
+                        onClick={e => { e.stopPropagation(); handleVote(); }}
+                        disabled={voting}
+                        style={{
+                          background: color,
+                          border: "none",
+                          borderRadius: 999,
+                          padding: "0.25rem 0.85rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          color: "var(--text)",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                          opacity: voting ? 0.6 : 1,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {voting ? "..." : "✓ confirmar"}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {hasVoted && (
                   <div className="vote-bar-bg">
@@ -204,16 +238,6 @@ export default function PollClient({ slug }: { slug: string }) {
           </div>
         )}
 
-        {canVote && (
-          <button
-            onClick={handleVote}
-            className="btn-primary"
-            disabled={!selectedOption || voting}
-            style={{ marginTop: "1.25rem", width: "100%", justifyContent: "center", fontSize: "1rem", padding: "0.75rem" }}
-          >
-            {voting ? "Votando..." : "Confirmar voto →"}
-          </button>
-        )}
 
         {hasVoted && !isExpired && (
           <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "1rem" }}>

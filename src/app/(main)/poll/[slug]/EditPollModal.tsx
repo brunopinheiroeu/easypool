@@ -38,7 +38,7 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
     const before = options.slice(0, i).filter(o => o.trim());
     const after = options.slice(i + 1).filter(o => o.trim());
     const merged = [...before, ...lines, ...after].slice(0, MAX_OPTIONS);
-    merged.push("");
+    if (merged.length < MAX_OPTIONS) merged.push("");
     setOptions(merged);
   };
 
