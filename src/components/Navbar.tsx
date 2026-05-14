@@ -19,8 +19,7 @@ export default function Navbar() {
     >
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", height: 60 }}>
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "1.4rem" }}>🗳️</span>
-          <span style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--text)" }}>EasyPoll</span>
+          <Image src="/logo.svg" alt="EasyPoll" width={120} height={40} style={{ display: "block" }} priority />
         </Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 import sql from "@/lib/db";
+import fs from "fs";
+import path from "path";
 
 export const alt = "EasyPoll — votação";
 export const size = { width: 1200, height: 630 };
@@ -7,6 +9,8 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const iconPath = path.join(process.cwd(), "src/app/icon.svg");
+  const iconBase64 = `data:image/svg+xml;base64,${fs.readFileSync(iconPath).toString("base64")}`;
   const rows = await sql`SELECT title, description FROM polls WHERE slug = ${slug}`;
   const poll = rows[0];
   const title = poll?.title || "Votação";
@@ -30,7 +34,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         <div style={{ position: "absolute", top: -60, right: -60, width: 400, height: 400, borderRadius: "50%", background: "rgba(244,167,185,0.25)", display: "flex" }} />
         <div style={{ position: "absolute", bottom: -60, left: -60, width: 320, height: 320, borderRadius: "50%", background: "rgba(168,216,200,0.25)", display: "flex" }} />
 
-        <div style={{ fontSize: 72, marginBottom: 32, display: "flex" }}>🗳️</div>
+        <img src={iconBase64} width={80} height={80} style={{ marginBottom: 32 }} />
 
         <div style={{
           fontSize: title.length > 40 ? 52 : 64,

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession, signIn } from "next-auth/react";
 
 const features = [
@@ -60,7 +61,7 @@ export default function Home() {
 
       {/* Hero */}
       <div className="animate-in" style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "3.5rem", marginBottom: "1rem" }}>🗳️</div>
+        <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center" }}><Image src="/icon.svg" alt="" width={112} height={112} /></div>
         <h1 style={{ fontSize: "2.6rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", lineHeight: 1.2 }}>
           Votações simples,<br />
           <span style={{ color: "#c5a0d0" }}>sem complicação</span>
