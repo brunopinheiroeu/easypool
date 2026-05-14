@@ -9,27 +9,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!poll) return { title: "Votação — EasyPool" };
 
+  const description = poll.description || "Vote agora e veja os resultados em tempo real.";
+
   return {
     title: `${poll.title} — EasyPool`,
-    description: poll.description || "Vote agora e veja os resultados em tempo real.",
+    description,
     openGraph: {
       title: poll.title,
-      description: poll.description || "Vote agora e veja os resultados em tempo real.",
+      description,
       url: `https://easypool.brunix.studio/poll/${slug}`,
       siteName: "EasyPool",
-      images: [
-        {
-          url: "https://easypool.brunix.studio/og-image.png",
-          width: 1200,
-          height: 630,
-        },
-      ],
       type: "website",
+      // imagem gerada automaticamente pelo opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",
       title: poll.title,
-      description: poll.description || "Vote agora e veja os resultados em tempo real.",
+      description,
     },
   };
 }
