@@ -7,18 +7,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const rows = await sql`SELECT title, description FROM polls WHERE slug = ${slug}`;
   const poll = rows[0];
 
-  if (!poll) return { title: "Votação — EasyPool" };
+  if (!poll) return { title: "Votação — EasyPoll" };
 
   const description = poll.description || "Vote agora e veja os resultados em tempo real.";
 
   return {
-    title: `${poll.title} — EasyPool`,
+    title: `${poll.title} — EasyPoll`,
     description,
     openGraph: {
       title: poll.title,
       description,
       url: `https://easypool.brunix.studio/poll/${slug}`,
-      siteName: "EasyPool",
+      siteName: "EasyPoll",
       type: "website",
       // imagem gerada automaticamente pelo opengraph-image.tsx
     },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "EasyPool — votações simples",
+  title: "EasyPoll — votações simples",
   description: "Crie votações rápidas e compartilhe com qualquer pessoa.",
 };
 

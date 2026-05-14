@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import sql from "@/lib/db";
 
-export const alt = "EasyPool — votação";
+export const alt = "EasyPoll — votação";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -71,7 +71,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           color: "#c5b8e8",
           fontSize: 24,
         }}>
-          EasyPool · easypool.brunix.studio
+          EasyPoll · easypool.brunix.studio
         </div>
       </div>
     ),

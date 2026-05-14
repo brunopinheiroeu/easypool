@@ -14,7 +14,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <main style={{ flex: 1, position: "relative", zIndex: 1 }}>{children}</main>
 
         <footer style={{ borderTop: "1px solid var(--border)", padding: "1rem 2rem", color: "var(--text-muted)", fontSize: "0.8rem", position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-          <span>© {new Date().getFullYear()} EasyPool — votações simples e rápidas</span>
+          <span>© {new Date().getFullYear()} EasyPoll — votações simples e rápidas</span>
           <a href="https://brunix.studio" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)", textDecoration: "none", fontWeight: 600 }}>
             by <span style={{ color: "var(--text)" }}>Brunix Studio</span>
           </a>
