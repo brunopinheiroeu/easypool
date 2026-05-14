@@ -19,7 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async jwt({ token, user }) {
       if (user) token.id = user.id;
-      if (!token.id && token.email) {
+      if (token.email) {
         const rows = await sql`SELECT id FROM users WHERE email = ${token.email}`;
         if (rows[0]) token.id = rows[0].id;
       }
