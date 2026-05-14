@@ -61,16 +61,24 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {options.map((opt, i) => (
                 <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
-                  <input className="input" value={opt} onChange={e => { const n = [...options]; n[i] = e.target.value; setOptions(n); }} maxLength={120} style={{ flex: 1 }} />
+                  <input
+                    className="input"
+                    value={opt}
+                    onChange={e => {
+                      const n = [...options];
+                      n[i] = e.target.value;
+                      if (i === n.length - 1 && e.target.value.trim() && n.length < 12) n.push("");
+                      setOptions(n);
+                    }}
+                    maxLength={120}
+                    style={{ flex: 1 }}
+                  />
                   {options.length > 2 && (
                     <button onClick={() => setOptions(options.filter((_, idx) => idx !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "1.2rem" }}>×</button>
                   )}
                 </div>
               ))}
             </div>
-            {options.length < 12 && (
-              <button onClick={() => setOptions([...options, ""])} className="btn-ghost" style={{ marginTop: "0.5rem", fontSize: "0.82rem", padding: "0.35rem 0.9rem" }}>+ Opção</button>
-            )}
           </div>
           <div>
             <label style={{ display: "block", fontWeight: 600, fontSize: "0.9rem", marginBottom: "0.4rem" }}>Data limite</label>

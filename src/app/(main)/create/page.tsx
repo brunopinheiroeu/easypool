@@ -26,11 +26,14 @@ export default function CreatePage() {
     );
   }
 
-  const addOption = () => setOptions([...options, ""]);
   const removeOption = (i: number) => setOptions(options.filter((_, idx) => idx !== i));
   const updateOption = (i: number, val: string) => {
     const next = [...options];
     next[i] = val;
+    // Auto-add new field when typing in the last option
+    if (i === next.length - 1 && val.trim() && next.length < 12) {
+      next.push("");
+    }
     setOptions(next);
   };
 
@@ -97,11 +100,6 @@ export default function CreatePage() {
                   </div>
                 ))}
               </div>
-              {options.length < 12 && (
-                <button type="button" onClick={addOption} className="btn-ghost" style={{ marginTop: "0.75rem", fontSize: "0.85rem", padding: "0.4rem 1rem" }}>
-                  + Adicionar opção
-                </button>
-              )}
             </div>
 
             <div>
