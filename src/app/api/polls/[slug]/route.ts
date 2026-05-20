@@ -41,12 +41,26 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
   `;
 
   if (options) {
-    await sql`DELETE FROM poll_options WHERE poll_id = ${poll.id}`;
     const { nanoid } = await import("nanoid");
-    for (let i = 0; i < options.length; i++) {
-      const text = options[i]?.trim();
-      if (text) {
-        await sql`INSERT INTO poll_options (id, poll_id, text, display_order) VALUES (${nanoid()}, ${poll.id}, ${text}, ${i})`;
+    type EditOption = { id?: string; text: string };
+    const incoming = (options as EditOption[]).filter(o => o.text?.trim());
+    const incomingIds = new Set(incoming.map(o => o.id).filter(Boolean));
+
+    // Delete options that were removed (and their votes via cascade)
+    const existing = await sql`SELECT id FROM poll_options WHERE poll_id = ${poll.id}`;
+    for (const o of existing as { id: string }[]) {
+      if (!incomingIds.has(o.id)) {
+        await sql`DELETE FROM poll_options WHERE id = ${o.id}`;
+      }
+    }
+
+    // Update existing options or insert new ones
+    for (let i = 0; i < incoming.length; i++) {
+      const { id, text } = incoming[i];
+      if (id) {
+        await sql`UPDATE poll_options SET text = ${text.trim()}, display_order = ${i} WHERE id = ${id} AND poll_id = ${poll.id}`;
+      } else {
+        await sql`INSERT INTO poll_options (id, poll_id, text, display_order) VALUES (${nanoid()}, ${poll.id}, ${text.trim()}, ${i})`;
       }
     }
   }

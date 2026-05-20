@@ -3,6 +3,7 @@ import { useState } from "react";
 
 interface Option { id: string; text: string; display_order: number; vote_count: number }
 interface Poll { slug: string; title: string; description: string | null; expires_at: string | null; options: Option[] }
+interface EditOption { id?: string; text: string; vote_count?: number }
 
 const MAX_OPTIONS = 20;
 
@@ -13,21 +14,28 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
 }) {
   const [title, setTitle] = useState(poll.title);
   const [description, setDescription] = useState(poll.description || "");
-  const [options, setOptions] = useState(poll.options.map(o => o.text));
+  const [options, setOptions] = useState<EditOption[]>([
+    ...poll.options.map(o => ({ id: o.id, text: o.text, vote_count: o.vote_count })),
+    { text: "" },
+  ]);
   const [expiresAt, setExpiresAt] = useState(
     poll.expires_at ? new Date(poll.expires_at).toISOString().slice(0, 16) : ""
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const filledCount = options.filter(o => o.trim()).length;
+  const filledCount = options.filter(o => o.text.trim()).length;
   const atLimit = filledCount >= MAX_OPTIONS;
 
   const updateOption = (i: number, val: string) => {
     const n = [...options];
-    n[i] = val;
-    if (i === n.length - 1 && val.trim() && n.filter(o => o.trim()).length < MAX_OPTIONS) n.push("");
+    n[i] = { ...n[i], text: val };
+    if (i === n.length - 1 && val.trim() && n.filter(o => o.text.trim()).length < MAX_OPTIONS) n.push({ text: "" });
     setOptions(n);
+  };
+
+  const removeOption = (i: number) => {
+    setOptions(options.filter((_, idx) => idx !== i));
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, i: number) => {
@@ -35,16 +43,16 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
     const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     if (lines.length < 2) return;
     e.preventDefault();
-    const before = options.slice(0, i).filter(o => o.trim());
-    const after = options.slice(i + 1).filter(o => o.trim());
-    const merged = [...before, ...lines, ...after].slice(0, MAX_OPTIONS);
-    if (merged.length < MAX_OPTIONS) merged.push("");
+    const before = options.slice(0, i).filter(o => o.text.trim());
+    const after = options.slice(i + 1).filter(o => o.text.trim());
+    const merged = [...before, ...lines.map(t => ({ text: t })), ...after].slice(0, MAX_OPTIONS);
+    if (merged.length < MAX_OPTIONS) merged.push({ text: "" });
     setOptions(merged);
   };
 
   const handleSave = async () => {
     setError("");
-    const valid = options.filter(o => o.trim());
+    const valid = options.filter(o => o.text.trim()).map(o => ({ id: o.id, text: o.text.trim() }));
     if (!title.trim()) return setError("Título obrigatório.");
     if (valid.length < 2) return setError("Mínimo 2 opções.");
     setSaving(true);
@@ -89,17 +97,22 @@ export default function EditPollModal({ poll, onClose, onSaved }: {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {options.map((opt, i) => (
-                <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
+                <div key={opt.id ?? `new-${i}`} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <input
                     className="input"
-                    value={opt}
+                    value={opt.text}
                     onChange={e => updateOption(i, e.target.value)}
                     onPaste={e => handlePaste(e, i)}
                     maxLength={120}
                     style={{ flex: 1 }}
                   />
+                  {opt.vote_count != null && opt.vote_count > 0 && (
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", whiteSpace: "nowrap", minWidth: 36, textAlign: "right" }}>
+                      {opt.vote_count} {opt.vote_count === 1 ? "voto" : "votos"}
+                    </span>
+                  )}
                   {options.length > 2 && (
-                    <button onClick={() => setOptions(options.filter((_, idx) => idx !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "1.2rem" }}>×</button>
+                    <button onClick={() => removeOption(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "1.2rem" }}>×</button>
                   )}
                 </div>
               ))}
