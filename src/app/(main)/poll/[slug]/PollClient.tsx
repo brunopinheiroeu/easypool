@@ -109,6 +109,9 @@ export default function PollClient({ slug }: { slug: string }) {
   const isExpired = poll.expires_at ? new Date(poll.expires_at) < new Date() : false;
   const isOwner = session?.user?.id === poll.creator_id;
   const canVote = !hasVoted && !isExpired;
+  const displayOptions = canVote
+    ? poll.options
+    : [...poll.options].sort((a, b) => b.vote_count - a.vote_count);
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2.5rem 1.5rem" }} className="animate-in">
@@ -156,7 +159,7 @@ export default function PollClient({ slug }: { slug: string }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {poll.options.map((opt, i) => {
+          {displayOptions.map((opt, i) => {
             const pct = poll.totalVotes > 0 ? Math.round((opt.vote_count / poll.totalVotes) * 100) : 0;
             const isSelected = selectedOption === opt.id;
             const isMyVote = votedOptionId === opt.id;
